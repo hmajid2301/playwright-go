@@ -89,7 +89,9 @@ func (d *PlaywrightDriver) isUpToDateDriver() (bool, error) {
 
 // Command returns an exec.Cmd for the driver.
 func (d *PlaywrightDriver) Command(arg ...string) *exec.Cmd {
-	cmd := exec.Command(getNodeExecutable(d.driverDirectory), append([]string{getDriverCliJs(d.driverDirectory)}, arg...)...)
+	cmd := exec.Command(
+		getNodeExecutable(d.driverDirectory),
+		append([]string{getDriverCliJs(d.driverDirectory)}, arg...)...)
 	cmd.SysProcAttr = defaultSysProcAttr
 	return cmd
 }
@@ -297,7 +299,7 @@ func getNodeExecutable(driverDirectory string) string {
 }
 
 func getDriverCliJs(driverDirectory string) string {
-	return filepath.Join(driverDirectory, "package", "cli.js")
+	return filepath.Join(driverDirectory, "test", "cli.js")
 }
 
 func (d *PlaywrightDriver) getDriverURLs() []string {
@@ -338,7 +340,8 @@ func (d *PlaywrightDriver) getDriverURLs() []string {
 // isReleaseVersion checks if the version is not a beta or alpha release
 // this helps to determine the url from where to download the driver
 func (d *PlaywrightDriver) isReleaseVersion() bool {
-	return !strings.Contains(d.Version, "beta") && !strings.Contains(d.Version, "alpha") && !strings.Contains(d.Version, "next")
+	return !strings.Contains(d.Version, "beta") && !strings.Contains(d.Version, "alpha") &&
+		!strings.Contains(d.Version, "next")
 }
 
 func makeFileExecutable(path string) error {
@@ -361,7 +364,10 @@ func downloadDriver(driverURLs []string) (body []byte, e error) {
 		}
 		defer resp.Body.Close()
 		if resp.StatusCode != http.StatusOK {
-			e = multierror.Join(e, fmt.Errorf("error: got non 200 status code: %d (%s) from %s", resp.StatusCode, resp.Status, driverURL))
+			e = multierror.Join(
+				e,
+				fmt.Errorf("error: got non 200 status code: %d (%s) from %s", resp.StatusCode, resp.Status, driverURL),
+			)
 			continue
 		}
 		body, err = io.ReadAll(resp.Body)
